@@ -1,43 +1,63 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# 每日早9点到晚8点每2小时运行一次
+
 name: 中青自动阅读
 
 on:
-    workflow_dispatch:
-    schedule:
-        - cron: "8 1-12/2 * * *"
-    watch:
-        types: [started]
-    repository_dispatch:
-        types: youth_read
-
+  workflow_dispatch:
+  schedule:
+     - cron: '8 1-12/2 * * *'
+  watch:
+    types: started
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        if: github.event.repository.owner.id == github.event.sender.id
-        steps:
-            - uses: actions/checkout@v1
-            - name: Use Node.js 10.x
-              uses: actions/setup-node@v1
-              with:
-                  node-version: 10.x
-            - name: npm install
-              run: |
-                  npm install
-            - name: "运行 【中青自动阅读】"
-              run: |
-                  node onlyOneExecute.js
-              env:
-                  JD_COOKIE: ${{ github.event.client_payload.JD_COOKIE || secrets.JD_COOKIE }}
-                  JD_DEBUG: ${{ github.event.client_payload.JD_DEBUG || secrets.JD_DEBUG }}
-                  JD_USER_AGENT: ${{ github.event.client_payload.JD_USER_AGENT || secrets.JD_USER_AGENT }}
-                  PUSH_KEY: ${{ github.event.client_payload.PUSH_KEY || secrets.PUSH_KEY }}
-                  BARK_PUSH: ${{ github.event.client_payload.BARK_PUSH || secrets.BARK_PUSH }}
-                  BARK_SOUND: ${{ github.event.client_payload.BARK_SOUND || secrets.BARK_SOUND }}
-                  TG_BOT_TOKEN: ${{ github.event.client_payload.TG_BOT_TOKEN || secrets.TG_BOT_TOKEN }}
-                  TG_USER_ID: ${{ github.event.client_payload.TG_USER_ID || secrets.TG_USER_ID }}
-                  PUSH_PLUS_TOKEN: ${{ github.event.client_payload.PUSH_PLUS_TOKEN || secrets.PUSH_PLUS_TOKEN }}
-                  PUSH_PLUS_USER: ${{ github.event.client_payload.PUSH_PLUS_USER || secrets.PUSH_PLUS_USER }}
-                  SYNCURL: https://raw.githubusercontent.com/GoodHolidays/Scripts/master/Task/youth.js
-                  YOUTH_READ: ${{ secrets.YOUTH_READ }}
-                  YOUTH_READ2: ${{ secrets.YOUTH_READ2 }}
-                  YOUTH_READ3: ${{ secrets.YOUTH_READ3 }}
-                  YOUTH_READ4: ${{ secrets.YOUTH_READ4 }}
+  build:
+    runs-on: ubuntu-latest
+    if: github.event.repository.owner.id == github.event.sender.id
+    env:
+      YOUTH_READ: ${{ secrets.YOUTH_READ }}
+      YOUTH_READ2: ${{ secrets.YOUTH_READ2 }}
+      YOUTH_READ3: ${{ secrets.YOUTH_READ3 }}
+      YOUTH_READ4: ${{ secrets.YOUTH_READ4 }}
+      TZ: Asia/shanghai
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: npm install
+        run: |
+          npm install
+          
+      - name: '运行 【中青看点自动阅读一】'
+        if: env.YOUTH_READ
+        run: |
+          node Task/Youth_Read.js
+        env:
+          YOUTH_READ: ${{ secrets.YOUTH_READ }}
+          YOUTH_ATIME: ${{ secrets.YOUTH_ATIME }}
+
+      - name: '运行 【中青看点自动阅读二】'
+        if: env.YOUTH_READ2
+        run: |
+          node Task/Youth_Read.js
+        env:
+          YOUTH_READ: ${{ secrets.YOUTH_READ2 }}
+          YOUTH_ATIME: ${{ secrets.YOUTH_ATIME2 }}
+          
+      - name: '运行 【中青看点自动阅读三】'
+        if: env.YOUTH_READ3
+        run: |
+          node Task/Youth_Read.js
+        env:
+          YOUTH_READ: ${{ secrets.YOUTH_READ3 }}
+          YOUTH_ATIME: ${{ secrets.YOUTH_ATIME3 }}
+          
+      - name: '运行 【中青看点自动阅读四】'
+        if: env.YOUTH_READ4
+        run: |
+          node Task/Youth_Read.js
+        env:
+          YOUTH_READ: ${{ secrets.YOUTH_READ4 }}
+          YOUTH_ATIME: ${{ secrets.YOUTH_ATIME4 }}
