@@ -27,9 +27,9 @@ jobs:
       - name: '运行 【中青看点1】'
         run: |
           cd ~/js   
-          node Task/youth1.js
+          #node Task/youth1.js
       - name: '运行 【youthshare】'
         run: |
           cd ~/js   
-          node Task/youthshare.js
+          node Scripts/youthshare.js
 
